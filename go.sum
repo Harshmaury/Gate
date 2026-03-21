@@ -1,0 +1,8 @@
+github.com/Harshmaury/Accord v0.1.4 h1:+iCKjJkDqp2gZ2s7rldLkgVY3wlf/Ui+MLEcuZMDWuE=
+github.com/Harshmaury/Accord v0.1.4/go.mod h1:HfmELXykJvkZTOuQjiK03f4NUN0i0CBIHk/67flr+yc=
+github.com/Harshmaury/Canon v0.4.0 h1:R2XbPTzdPIXMsqMwFwhEZfZsS8foG52iEESKToM84VY=
+github.com/Harshmaury/Canon v0.4.0/go.mod h1:yGNa8zeXP3JP7uFJusFJeyeNY+w0PnnIJAu2wLuawfE=
+github.com/golang-jwt/jwt/v5 v5.2.1 h1:OuVbFODueb089Lh128TAcimifWaLhJwVflnrgM17wHk=
+github.com/golang-jwt/jwt/v5 v5.2.1/go.mod h1:pqrtFR0X4osieyHYxtmOUWsAWrfe1Q5UVIyoH402zdk=
+github.com/mattn/go-sqlite3 v1.14.22 h1:2gZY6PC6kBnID23Tichd1K+Z0oS6nE/XwU+Vz/5o4kU=
+github.com/mattn/go-sqlite3 v1.14.22/go.mod h1:Uh1q+B4BYcTPb+yiD3kU8Ct7aC0hY9fxUwlHK0RXw+Y=

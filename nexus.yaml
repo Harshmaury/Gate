@@ -1,0 +1,13 @@
+id: gate
+name: Gate
+language: go
+type: service
+capabilities:
+  - identity
+  - token-issuance
+  - token-validation
+  - oauth-github
+runtime:
+  binary: gate
+  port: 8088
+  health: http://127.0.0.1:8088/health
