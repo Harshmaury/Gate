@@ -24,8 +24,9 @@ type AuthHandler struct {
 	store        store.Storer
 	developerTTL time.Duration
 
-	mu     sync.Mutex
-	states map[string]time.Time // state → issued_at (for CSRF protection)
+	mu            sync.Mutex
+	states        map[string]time.Time       // state → issued_at (for CSRF)
+	pendingTokens map[string]accord.GateTokenResponse // state → completed token (for CLI poll)
 }
 
 // NewAuthHandler creates an AuthHandler.
@@ -40,7 +41,8 @@ func NewAuthHandler(
 		issuer:       iss,
 		store:        s,
 		developerTTL: developerTTL,
-		states:       make(map[string]time.Time),
+		states:        make(map[string]time.Time),
+		pendingTokens: make(map[string]accord.GateTokenResponse),
 	}
 }
 
@@ -92,13 +94,18 @@ func (h *AuthHandler) GitHubCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(accord.GateTokenResponse{ //nolint:errcheck
+	tokenResp := accord.GateTokenResponse{
 		Token:     signed,
 		Subject:   subject,
 		ExpiresAt: dto.ExpiresAt,
-	})
+	}
+	h.mu.Lock()
+	h.pendingTokens[subject] = tokenResp
+	h.mu.Unlock()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(tokenResp) //nolint:errcheck
 }
 
 // consumeState validates and removes a state value (one-time use, 10min window).
@@ -119,4 +126,19 @@ func newState() (string, error) {
 		return "", err
 	}
 	return base64.URLEncoding.EncodeToString(b[:]), nil
+}
+
+// Poll handles GET /gate/auth/poll.
+// The engx CLI calls this repeatedly after opening the OAuth browser flow.
+// Returns 204 No Content while waiting, 200 with the token once OAuth completes.
+// The token is consumed on first successful poll (one-time read).
+func (h *AuthHandler) Poll(w http.ResponseWriter, r *http.Request) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	for subject, tokenResp := range h.pendingTokens {
+		delete(h.pendingTokens, subject)
+		respondOK(w, tokenResp)
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

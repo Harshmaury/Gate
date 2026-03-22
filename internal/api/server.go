@@ -42,6 +42,7 @@ func NewServer(cfg ServerConfig) *http.Server {
 	authH := handler.NewAuthHandler(cfg.GitHub, cfg.Issuer, cfg.Store, cfg.DeveloperTTL)
 	mux.HandleFunc("GET /gate/auth/github", authH.GitHub)
 	mux.HandleFunc("GET /gate/auth/github/callback", authH.GitHubCallback)
+	mux.HandleFunc("GET /gate/auth/poll", authH.Poll)
 
 	// ── service-token protected endpoints ─────────────────────────────────────
 	tokensH := handler.NewTokensHandler(cfg.Issuer, cfg.Store, cfg.AgentTTL, cfg.CITTL)
