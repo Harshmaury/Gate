@@ -1,13 +1,20 @@
+name: gate
 id: gate
-name: Gate
+type: web-api
 language: go
-type: service
+version: 1.0.0
+keywords:
+  - gate
+  - identity
+  - auth
 capabilities:
   - identity
   - token-issuance
   - token-validation
   - oauth-github
+depends_on: []
 runtime:
-  binary: gate
+  provider: process
   port: 8088
-  health: http://127.0.0.1:8088/health
+  command: /home/harsh/bin/gate
+  dir: /home/harsh/workspace/projects/engx/services/gate
